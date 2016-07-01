@@ -1,24 +1,35 @@
-from django.shortcuts import render
-from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponse
-from .forms import DatosRegistroUsuarioChat
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.shortcuts import render, HttpResponseRedirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import views as auth_views
 
 
 def crear_cuenta(request):
-	
-	if request.method == "POST":
-		form = DatosRegistroUsuarioChat(request.POST)
 
-		if form.is_valid():
-			
-			contra = form.cleaned_data['password']
-			contra_confirmada = form.cleaned_data['password_confirmar']
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('/chat/')
 
-			if contra == contra_confirmada:
-				return HttpResponse('OK!')
-			else:
-				form.add_error("password_confirmar", "Las contraseñas no coinciden.")
-	else:
-		form = DatosRegistroUsuarioChat()
-	return render(request, 'registration/signup.html', {'form':form})
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
 
+        if form.is_valid():
+            user = User.objects.create_user(username=form.cleaned_data['username'],
+                                            password=form.cleaned_data['password1'])
+
+            user_autenticado = authenticate(username=user.username, password=form.cleaned_data['password1'])
+            login(request, user_autenticado)
+            return HttpResponseRedirect('/chat/')
+
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'registration/signup.html', {'form': form})
+
+
+def login_check(request):
+
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('/chat/')
+
+    return auth_views.login(request)

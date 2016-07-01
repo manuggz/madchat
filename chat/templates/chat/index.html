@@ -1,65 +1,37 @@
-{% load staticfiles %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title>Mad Chat | Manuel Gonzalez(manuelggonzalezm@gmail.com)</title>
+{% extends "chat/base.html" %}
 
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+{% block content %}
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <div class="row">
+    <div class="col-md-12">
+        <div class="row panel panel-info">
 
-	<!-- Latest compiled and minified JavaScript 
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>-->
+            <div class="panel-heading" style="height:50px">
+                Tu nombre de usuario:
+                    <b>
+                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                        {{user.username}}
+                    </b>
+            </div>
 
-	<script src="{% static 'chat/js/chat.js' %}" ></script>
-	<link rel="stylesheet" href="{% static 'chat/css/chat.css' %}" >
+             <div class="panel-body" id="chat-txtboard"  >
 
-</head>
-<body>
-	<div class="container" style="margin-top:50px">
-	  <div class="row">
-	  	<div class="col-md-12">
-	  		<div class="row panel panel-info">
-
-		  		<div class="panel-heading" style="height:50px">
-		  			Tu nombre de usuario: 
-		  				<b>
-		  					<span class="glyphicon glyphicon-user" aria-hidden="true"></span> 
-		  					{{username}} 
-	  					</b>
-		  		</div>
-
-				 <div class="panel-body" id="chat-txtboard"  >
-
-				 	<!--{% if usuario.es_nuevo%}
-					 	<div>
-					 		<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-					 		<b> Bienvenido, se le ha asignado el nombre de usuario {{usuario.username}}.</b>
-					 	</div>
-				 	{%endif%}-->
-					<div>
-						<span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-						<b> {{username}} ha iniciado sesión. </b>
-					</div>
-				</div>
+            </div>
 
 
-	  		</div>
+        </div>
 
-	  		<div class="row" style="background-color:#2E6DA4;padding: 5px;">
-				<form method="post" id="form-mensaje">
-					{% csrf_token %}
-					<div class="form-group col-md-10" style="">
-					    <input type="text" class="form-control" id="inpTxtMensaje" placeholder="Di Hola!" style="height:40px;">
-					 </div>
-					<input type="submit" value="Enviar!"  class="btn btn-default col-md-2" style="height:40px;" />
-				</form>
-	  		</div>
-	  	</div>
-	  	<!--<div class="col-md-4"><input type="text" name="inpTxtConectados" style="height:450px"></div>-->
-	  </div>
-	</div>
-</body>
-</html>
+        <div class="row" style="background-color:#2E6DA4;padding: 5px;">
+            <form method="post" id="form-mensaje">
+                {% csrf_token %}
+                <div class="form-group col-md-10" style="">
+                    <input type="text" class="form-control" id="inpTxtMensaje" placeholder="Di Hola!" style="height:40px;">
+                 </div>
+                <input type="submit" value="Enviar!"  class="btn btn-default col-md-2" style="height:40px;" />
+            </form>
+        </div>
+    </div>
+    <!--<div class="col-md-4"><input type="text" name="inpTxtConectados" style="height:450px"></div>-->
+  </div>
+
+{% endblock %}

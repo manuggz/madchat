@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from .models import MensajeUsuario, MensajeInicioSesion, Usuario, Mensaje
-from random import randint
+from .models import MensajeUsuario, MensajeInicioSesion,  Mensaje
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required
 
@@ -11,42 +10,40 @@ def index(request):
 
     contexto = {}
 
-    if request.session.get('username') is None:  # Si es un nevo usuario
+    try:
+        mostrado_inisesion = request.session['mostrado_mensaje_inisesion']
+    except KeyError:
+        mostrado_inisesion = False
 
-        # Creamos un nombre de usuario aleatorio
-        request.session['username'] = 'Anonimo' + str(randint(0, 10000))
+    if not mostrado_inisesion:
 
-        usuario_actual = Usuario(username=request.session['username'])
-        usuario_actual.save()
-
+        print('no mostrada')
         # Creamos el mensaje de inicio de sesion
-        nuevo_mensaje = MensajeInicioSesion(usuario=usuario_actual)
+        nuevo_mensaje = MensajeInicioSesion(usuario=request.user)
         nuevo_mensaje.save()
 
         # Guardamos el mensaje de inicio de sesion , para que se muestre
         m = Mensaje(content_object=nuevo_mensaje)
         m.save()
 
-    # Guardamos el ultimo mensaje de la base de datos para comenzar a mandar
-    # al usuario los que les sigan
-    try:
-        request.session['ultimo_actualizado'] = Mensaje.objects.order_by('-pk')[0].pk
-    except IndexError:  # Ups! no hay mensajes
-        request.session['ultimo_actualizado'] = -1
+        request.session['mostrado_mensaje_inisesion'] = True
 
-    contexto['username'] = request.session['username']
+        # Guardamos el ultimo mensaje de la base de datos para comenzar a mandar
+        # al usuario los que les sigan
+        request.session['ultimo_actualizado'] = m.pk - 1
+
     return render(request, 'chat/index.html', contexto)
 
 
+@login_required
 def enviar_mensaje(request):
-    usuario_actual = Usuario.objects.get(pk=request.session['username'])
 
     if request.method == 'POST':
 
         msg = request.POST.get('mensaje')
 
         # Creamos el mensaje
-        nuevo_mensaje = MensajeUsuario(mensaje_contenido=msg, usuario_creador=usuario_actual)
+        nuevo_mensaje = MensajeUsuario(mensaje_contenido=msg, usuario_creador=request.user)
         nuevo_mensaje.save()
 
         # Guardamos el mensaje, para que se muestre
@@ -54,12 +51,13 @@ def enviar_mensaje(request):
         m.save()
 
         # Decimos hey! ok -- Actualmente se envia el mensaje de nuevo para que se muestre en pantalla
-        return JsonResponse({'username': usuario_actual.username, 'mensaje': msg})
+        return JsonResponse({'username': request.user.username, 'mensaje': msg})
     else:
         return HttpResponse("Método no permitido.", content_type="text/plain", status=405)  # 405 Method Not Allowed
 
 
 # Metodo inseguro - cualquiera puede ver
+@login_required
 def recibir_actualizaciones(request):
 
     if request.method == 'GET':
@@ -70,9 +68,6 @@ def recibir_actualizaciones(request):
         no_leidos = []
 
         if mensajes_no_leidos.exists():
-
-            # Obtenemos el objeto usuario actual
-            usuario_actual = Usuario.objects.get(pk=request.session['username'])
 
             # Parseamos los no leidos
             for no_leido in mensajes_no_leidos:
@@ -86,8 +81,8 @@ def recibir_actualizaciones(request):
                         'mensaje': mensaje.mensaje_contenido
                     }
 
-                    if mensaje.usuario_creador.pk != usuario_actual.pk:  # Si no es uno que envio el usuario actual
-                        no_leidos.append(mensaje_no_leido_dict)
+                    #if mensaje.usuario_creador.pk != request.user.pk:  # Si no es uno que envio el usuario actual
+                    no_leidos.append(mensaje_no_leido_dict)
 
                 elif no_leido.content_type == ContentType.objects.get_for_model(MensajeInicioSesion):
                     mensaje_no_leido_dict = {

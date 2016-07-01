@@ -30,12 +30,12 @@ $(document).ready(function(){
 	        	//Limpiamos el chat
 	            $('#inpTxtMensaje').val(''); // remove the value from the input
 
-	            var chat = $('#chat-txtboard');
+	            //var chat = $('#chat-txtboard');
 	            //Agregamos el mensaje al chat
-	            chat.append(crear_mensaje_html(json.username,json.mensaje));
+	            //chat.append(crear_mensaje_html(json.username,json.mensaje));
 
 	            //Movemos el chat al ultimo elemento enviado - recibido(esperemos sea este)
-	            chat.scrollTop(chat.prop("scrollHeight"));
+	            //chat.scrollTop(chat.prop("scrollHeight"));
 	        },
 
 	        // handle a non-successful response
