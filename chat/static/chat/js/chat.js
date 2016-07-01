@@ -1,11 +1,21 @@
 // Submit post on submit
 
 $(document).ready(function(){
+
 	$('#form-mensaje').on('submit', function(event){
 	    event.preventDefault();
-	    enviar_mensaje_chat();
+        var texto_enviar = $('#inpTxtMensaje').val();
+        if(texto_enviar){
+            if(texto_enviar.trim().length > 0){
+                enviar_mensaje_chat();
+            }else{
+                $('#inpTxtMensaje').val(''); // remove the value from the input
+            }
+        }
+        
 	});
 
+    $('#chat-txtboard').scrollTop($('#chat-txtboard').prop("scrollHeight"));
 
 	// AJAX for posting
 	function enviar_mensaje_chat() {
@@ -22,13 +32,10 @@ $(document).ready(function(){
 
 	            var chat = $('#chat-txtboard');
 	            //Agregamos el mensaje al chat
-	            chat.append(
-	            	'<div><b>' + json.username + ': </b>' + 
-	            	json.mensaje + '</div>');
+	            chat.append(crear_mensaje_html(json.username,json.mensaje));
 
 	            //Movemos el chat al ultimo elemento enviado - recibido(esperemos sea este)
 	            chat.scrollTop(chat.prop("scrollHeight"));
-	            console.log(json); // log the returned json to the console
 	        },
 
 	        // handle a non-successful response
@@ -39,8 +46,6 @@ $(document).ready(function(){
 	        }
     	});
 	};
-
-
     // This function gets cookie with a given name
     function getCookie(name) {
         var cookieValue = null;
@@ -94,3 +99,41 @@ $(document).ready(function(){
         }
     });
 });
+
+(function updater() {
+  $.ajax({
+    url: 'recibirActualizaciones', 
+    type:"GET",
+    success: function(json) {
+        var chat = $('#chat-txtboard');
+
+        if(json.mensajes.length > 0){
+            for (var i = 0; i < json.mensajes.length; i++) {
+
+                if(json.mensajes[i].tipo == 'mensaje_usuario'){
+                    chat.append(crear_mensaje_html(json.mensajes[i].username,json.mensajes[i].mensaje));
+                }else if(json.mensajes[i].tipo == 'mensaje_inicio_sesion'){                    
+                    chat.append(crear_mensaje_inicio_sesion_html(json.mensajes[i].username));
+                }
+            }
+
+            //Movemos el chat al ultimo elemento enviado - recibido(esperemos sea este)
+            chat.scrollTop(chat.prop("scrollHeight"));
+        }
+    },
+    complete: function() {
+      // Schedule the next request when the current one's complete
+      setTimeout(updater, 500);
+    }
+  });
+})();
+
+function crear_mensaje_html(username,mensaje){
+    return '<div><span class="glyphicon glyphicon-user" aria-hidden="true"></span><b> ' + username + ': </b>' + 
+                    mensaje + '</div>'
+}
+
+function crear_mensaje_inicio_sesion_html(username){
+    return '<div><span class="glyphicon glyphicon-user" aria-hidden="true"></span><b> ' + username + ' ha iniciado sesión. </b></div>'
+}
+
