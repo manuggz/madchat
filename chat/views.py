@@ -1,8 +1,9 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from .models import MensajeUsuario, MensajeInicioSesion,  Mensaje
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+
+from .models import MensajeUsuario, MensajeInicioSesion,  Mensaje
 
 
 @login_required
@@ -17,7 +18,6 @@ def index(request):
 
     if not mostrado_inisesion:
 
-        print('no mostrada')
         # Creamos el mensaje de inicio de sesion
         nuevo_mensaje = MensajeInicioSesion(usuario=request.user)
         nuevo_mensaje.save()
