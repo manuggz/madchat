@@ -9,7 +9,12 @@ socket.onmessage = function (message) {
     var data = JSON.parse(message.data);
     var chat = $('#chat-txtboard');
 
-    chat.append(crear_mensaje_html(data.username, data.mensaje));
+    alert(data.tipo_mensaje);
+    if (data.tipo_mensaje == "broadcast") {
+        chat.append(crear_mensaje_html(data.username, data.mensaje));
+    } else if (data.tipo_mensaje == "inicio_sesion") {
+        chat.append(crear_mensaje_inicio_sesion_html(data.username));
+    }
 
     //Movemos el chat al ultimo elemento enviado - recibido(esperemos sea este)
     chat.scrollTop(chat.prop("scrollHeight"));

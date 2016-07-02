@@ -1,7 +1,11 @@
 import json
 
+from channels import Channel
 from channels import Group
 from channels.auth import channel_session_user, channel_session_user_from_http
+from django.contrib.auth.models import User
+
+from chat.models import Mensaje, MensajeUsuario
 
 
 # Connected to websocket.receive
@@ -9,10 +13,32 @@ from channels.auth import channel_session_user, channel_session_user_from_http
 def ws_message(message):
     data = json.loads(message['text'])
 
-    mensaje_push = {
+    # Stick the message onto the processing queue
+    Channel("chat-messages").send({
+        'tipo_mensaje': 'broadcast',
         'username': message.user.username,
-        'mensaje': data['mensaje']
-    }
+        "mensaje": data['mensaje'],
+    })
+
+
+# Connected to chat-messages
+def msg_consumer(message):
+    mensaje_push = {}
+
+    if message.content['tipo_mensaje'] == 'broadcast':
+        # Save to model
+        nuevo_mensaje = MensajeUsuario.objects.create(
+            usuario_creador=User.objects.get(username=message.content['username']),
+            mensaje_contenido=message.content['mensaje'],
+        )
+
+        Mensaje.objects.create(content_object=nuevo_mensaje)
+
+        mensaje_push = {
+            'tipo_mensaje': 'broadcast',
+            'username': message.content['username'],
+            'mensaje': message.content['mensaje'],
+        }
 
     Group("chat").send({'text': json.dumps(mensaje_push)})
 
@@ -21,6 +47,12 @@ def ws_message(message):
 @channel_session_user_from_http
 def ws_add(message):
     Group("chat").add(message.reply_channel)
+
+    Group("chat").send({'text': json.dumps({
+        'tipo_mensaje': 'inicio_sesion',
+        'username': message.user.username
+    })
+    })
 
 
 # Connected to websocket.disconnect
