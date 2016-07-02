@@ -5,7 +5,7 @@ from channels import Group
 from channels.auth import channel_session_user, channel_session_user_from_http
 from django.contrib.auth.models import User
 
-from chat.models import Mensaje, MensajeUsuario
+from chat.models import  Mensaje
 
 
 # Connected to websocket.receive
@@ -23,16 +23,15 @@ def ws_message(message):
 
 # Connected to chat-messages
 def msg_consumer(message):
+
     mensaje_push = {}
 
     if message.content['tipo_mensaje'] == 'broadcast':
-        # Save to model
-        nuevo_mensaje = MensajeUsuario.objects.create(
+
+        Mensaje.objects.create(
             usuario_creador=User.objects.get(username=message.content['username']),
             mensaje_contenido=message.content['mensaje'],
         )
-
-        Mensaje.objects.create(content_object=nuevo_mensaje)
 
         mensaje_push = {
             'tipo_mensaje': 'broadcast',
@@ -49,7 +48,7 @@ def ws_add(message):
     Group("chat").add(message.reply_channel)
 
     Group("chat").send({'text': json.dumps({
-        'tipo_mensaje': 'inicio_sesion',
+        'tipo_mensaje': 'conectado_chat',
         'username': message.user.username
     })
     })

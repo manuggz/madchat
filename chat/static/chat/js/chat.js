@@ -1,7 +1,6 @@
 // Note that the path doesn't matter right now; any WebSocket
 // connection gets bumped over to WebSocket consumers
 
-sessionKey = $('#session-key').val();
 socket = new WebSocket("ws://" + window.location.host + "/chat/");
 
 socket.onmessage = function (message) {
@@ -9,11 +8,10 @@ socket.onmessage = function (message) {
     var data = JSON.parse(message.data);
     var chat = $('#chat-txtboard');
 
-    alert(data.tipo_mensaje);
     if (data.tipo_mensaje == "broadcast") {
         chat.append(crear_mensaje_html(data.username, data.mensaje));
-    } else if (data.tipo_mensaje == "inicio_sesion") {
-        chat.append(crear_mensaje_inicio_sesion_html(data.username));
+    } else if (data.tipo_mensaje == "conectado_chat") {
+        chat.append(crear_mensaje_conectado_html(data.username));
     }
 
     //Movemos el chat al ultimo elemento enviado - recibido(esperemos sea este)
@@ -59,7 +57,9 @@ function crear_mensaje_html(username,mensaje){
                     mensaje + '</div>'
 }
 
-function crear_mensaje_inicio_sesion_html(username){
-    return '<div><span class="glyphicon glyphicon-user" aria-hidden="true"></span><b> ' + username + ' ha iniciado sesión. </b></div>'
+function crear_mensaje_conectado_html(username){
+    return '<div><span class="glyphicon glyphicon-user" aria-hidden="true"></span><b> '
+        + username +
+        ' se ha conectado al chat. </b></div>'
 }
 

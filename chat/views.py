@@ -4,7 +4,4 @@ from django.shortcuts import render
 
 @login_required
 def index(request):
-
-    contexto = {}
-
-    return render(request, 'chat/index.html', contexto)
+    return render(request, 'chat/index.html', {})
