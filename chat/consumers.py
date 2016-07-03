@@ -28,8 +28,8 @@ def msg_consumer(message):
     if message.content['tipo_mensaje'] == 'broadcast':
 
         Mensaje.objects.create(
-            usuario_creador=message.user,
-            mensaje_contenido=message.content['mensaje'],
+            usuario_creador   = User.objects.get(username=message.content['username']),
+            mensaje_contenido = message.content['mensaje'],
         )
 
         mensaje_push = {
