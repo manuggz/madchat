@@ -6,30 +6,40 @@ socket = new WebSocket("ws://" + window.location.host + "/chat/");
 socket.onmessage = function (message) {
 
     var data = JSON.parse(message.data);
-    var chat = $('#chat-txtboard');
-
+    var chat = $('#chat');
     if (data.tipo_mensaje == "broadcast") {
-        chat.append(crear_mensaje_html(data.username, data.mensaje));
+        chat.append($(crear_mensaje_html(data.username, data.mensaje)).hide().fadeIn(200));
     }else if(data.tipo_mensaje == "conectado_chat") {
-        chat.append(crear_mensaje_conectado_html(data.username));
+        //chat.append(crear_mensaje_conectado_html(data.username));
     }else if(data.tipo_mensaje == "desconectado_chat"){
-        chat.append(crear_mensaje_desconectado_html(data.username));
+        //chat.append(crear_mensaje_desconectado_html(data.username));
     }
 
-    //Movemos el chat al ultimo elemento enviado - recibido(esperemos sea este)
-    chat.scrollTop(chat.prop("scrollHeight"));
+    if($('#username').val() == data.username){ //Si es un mensaje enviado por el mismo movemos el scroll para abajo
+        //Movemos el chat al ultimo elemento enviado - recibido(esperemos sea este)
+        $("html, body").animate({ scrollTop: $(document).height()-$(window).height() },200);
+    }
 };
 
 
 $(document).ready(function(){
 
+    $('#text-mensaje').keyup(function(e){
+        if(e.keyCode == 13) {
+            chequear_enviar_mensaje();
+        }
+    });
+    $('#boton-enviar').on('click', function (event) {
 
-    $('#form-mensaje').on('submit', function (event) {
+        chequear_enviar_mensaje();
 
-        var inpTxtMensaje = $('#inpTxtMensaje');
+	});
+
+    function chequear_enviar_mensaje(){
+        var inpTxtMensaje = $('#text-mensaje');
         var texto_enviar = inpTxtMensaje.val();
 
-	    event.preventDefault();
+	    //event.preventDefault();
 
         if(texto_enviar){
             if(texto_enviar.trim().length > 0){
@@ -43,22 +53,40 @@ $(document).ready(function(){
             inpTxtMensaje.val('').focus(); // remove the value from the input
 
         }
-        return false;
-        
-	});
-
-    var chat_txtboard = $('#chat-txtboard');
-    chat_txtboard.scrollTop(chat_txtboard.prop("scrollHeight"));
+    }
+    var chat_txtboard = $('#chat');
+    //chat_txtboard.scrollTop(chat_txtboard.prop("scrollHeight"));
 
 
 });
 
 
 function crear_mensaje_html(username,mensaje){
-    return '<div><span class="glyphicon glyphicon-user" aria-hidden="true"></span><b> ' + username + ': </b>' + 
-                    mensaje + '</div>'
-}
 
+    var nueva_entrada = ""
+    if($('#username').val() == username){
+        nueva_entrada = "<li class='right clearfix'>" +
+                    	"<span class='chat-img pull-right'>"
+    }else{
+        nueva_entrada = '<li class="left clearfix">' +
+                    	'<span class="chat-img pull-left">'
+    }
+
+    nueva_entrada += '<img src="http://bootdey.com/img/Content/user_3.jpg" alt="User Avatar">' +
+                    	'</span>'+
+                    	'<div class="chat-body clearfix">'+
+                    		'<div class="header">'+
+                    			'<strong class="primary-font">' + username + '</strong>'+
+                    			//'<small class="pull-right text-muted"><i class="fa fa-clock-o"></i> 12 mins ago</small>'+
+                    		'</div>'+
+                    		'<p>'+mensaje + '</p>'+
+                    	'</div>'+
+                    '</li>';
+
+
+    return nueva_entrada
+}
+/*
 function crear_mensaje_conectado_html(username){
     return '<div><span class="glyphicon glyphicon-user" aria-hidden="true"></span><b> '
         + username +
@@ -71,3 +99,4 @@ function crear_mensaje_desconectado_html(username){
         ' se ha desconectado del chat. </b></div>'
 }
 
+*/

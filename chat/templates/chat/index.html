@@ -3,7 +3,24 @@
 {% block content %}
 
   <div class="row">
-    <div class="col-md-12">
+
+    	<div class=" bg-white ">
+            <div class="chat-message">
+                <ul class="chat" id="chat">
+
+                </ul>
+            </div>
+            <div class="chat-box bg-white">
+            	<div class="input-group">
+            		<input class="form-control border no-shadow no-rounded" placeholder="Escriba su mensaje aquí" id="text-mensaje" autofocus>
+            		<span class="input-group-btn">
+            			<button class="btn btn-success no-rounded" type="button" id="boton-enviar">¡Enviar!</button>
+            		</span>
+            	</div><!-- /input-group -->
+            </div>
+		</div>
+
+<!--    <div class="col-md-12">
         <div class="row panel panel-info">
 
             <div class="panel-heading" style="height:50px">
@@ -34,5 +51,6 @@
         </div>
     </div>
     <!--<div class="col-md-4"><input type="text" name="inpTxtConectados" style="height:450px"></div>-->
-  </div><input type="hidden" value="{{ request.session.session_key }}" id="session-key"/>
+  </div>
+    <input type="hidden" value="{{ user.username }}" id="username">
 {% endblock %}
