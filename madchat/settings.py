@@ -110,6 +110,8 @@ CHANNEL_LAYERS = {
     },
 }
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 

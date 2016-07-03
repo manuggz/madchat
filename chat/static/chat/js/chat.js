@@ -10,8 +10,10 @@ socket.onmessage = function (message) {
 
     if (data.tipo_mensaje == "broadcast") {
         chat.append(crear_mensaje_html(data.username, data.mensaje));
-    } else if (data.tipo_mensaje == "conectado_chat") {
+    }else if(data.tipo_mensaje == "conectado_chat") {
         chat.append(crear_mensaje_conectado_html(data.username));
+    }else if(data.tipo_mensaje == "desconectado_chat"){
+        chat.append(crear_mensaje_desconectado_html(data.username));
     }
 
     //Movemos el chat al ultimo elemento enviado - recibido(esperemos sea este)
@@ -61,5 +63,11 @@ function crear_mensaje_conectado_html(username){
     return '<div><span class="glyphicon glyphicon-user" aria-hidden="true"></span><b> '
         + username +
         ' se ha conectado al chat. </b></div>'
+}
+
+function crear_mensaje_desconectado_html(username){
+    return '<div><span class="glyphicon glyphicon-user" aria-hidden="true"></span><b> '
+        + username +
+        ' se ha desconectado del chat. </b></div>'
 }
 
