@@ -7,13 +7,26 @@ socket.onmessage = function (message) {
 
     var data = JSON.parse(message.data);
     var chat = $('#chat');
+    var listac = $('#lista-conectados');
+
+    var nconectados = $('#n-conectados');
+
     if (data.tipo_mensaje == "broadcast") {
-        chat.append($(crear_mensaje_html(data.username, data.mensaje)).hide().fadeIn(200));
-    }else if(data.tipo_mensaje == "conectado_chat") {
-        //chat.append(crear_mensaje_conectado_html(data.username));
+        chat.append($(crear_mensaje_html(data.username, data.mensaje)).hide().fadeIn(100));
+    }else if(data.tipo_mensaje == "conectado_chat"){
+        listac.append($("<li>" + data.username + "</li>").hide().fadeIn(100));
+        nconectados.html(parseInt(nconectados.html()) + 1)
     }else if(data.tipo_mensaje == "desconectado_chat"){
-        //chat.append(crear_mensaje_desconectado_html(data.username));
+        listac.find("li").each(function (index) {
+           if($(this).text() == data.username){
+               $(this).detach();
+               return false;
+           }
+        });
+
+        if(parseInt(nconectados.html()) > 0)nconectados.html(parseInt(nconectados.html()) - 1)
     }
+
 
     if($('#username').val() == data.username){ //Si es un mensaje enviado por el mismo movemos el scroll para abajo
         //Movemos el chat al ultimo elemento enviado - recibido(esperemos sea este)

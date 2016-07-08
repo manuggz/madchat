@@ -48,7 +48,6 @@ def ws_add(message):
     chat_user, is_created = ChatUser.objects.get_or_create(user=message.user)
 
     Group("chat").add(message.reply_channel)
-
     if not chat_user.esta_conectado(): #Avisamos a todos los usuarios conectados
         Group("chat").send({'text': json.dumps({
             'tipo_mensaje': 'conectado_chat',

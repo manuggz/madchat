@@ -4,7 +4,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 
-# 15Ma_Nu1 2chu toston cotufa caramelada
+# 15Ma_Nu1 2chupetas de 50 toston 170 cotufa 120 caramelada tostonnuevo 180 chees tres 180
+# dos chupis
 
 
 class Mensaje(models.Model):
