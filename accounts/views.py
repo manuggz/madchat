@@ -6,7 +6,6 @@ from django.contrib.auth import views as auth_views
 
 
 def crear_cuenta(request):
-
     if request.user.is_authenticated():
         return HttpResponseRedirect('/chat/')
 
@@ -28,7 +27,8 @@ def crear_cuenta(request):
 
 
 def login_check(request):
-
+    # Todos los usuarios autenticados tienen permiso de chatear
+    # Por lo que no hace falta que se autentique con otra cuenta
     if request.user.is_authenticated():
         return HttpResponseRedirect('/chat/')
 

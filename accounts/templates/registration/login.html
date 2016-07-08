@@ -13,7 +13,7 @@
 
 <form method="post" action="{% url 'login' %}" class="form-signin">
     {% csrf_token %}
-    <h2 class="form-signin-heading">Por favor , inicie sesión:</h2>
+    <h2 class="form-signin-heading">Por favor , inicie sesión para continuar:</h2>
 
     <label for="{{form.username.id_for_label}}" class="sr-only">{{form.username.label}}</label>
     <input type="text" id="{{form.username.id_for_label}}" maxlength="254" name="username" class="form-control" placeholder="{{form.username.label}}" required autofocus>

@@ -30,20 +30,15 @@
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="ti-panel"></i>
-        						<p>Stats</p>
-                            </a>
-                        </li>
-        				<li>
-                            <a href="#">
-        						<i class="ti-settings"></i>
-        						<p>Settings</p>
-                            </a>
+                        <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"> </span> <b>{{ user.username }} </b><span class="caret"></span></a>
+                          <ul class="dropdown-menu">
+                            <li ><span class="glyphicon glyphicon-user"> </span><a href="#" class="inline-block" >Perfil</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li ><span class="glyphicon glyphicon-off"> </span><a href="{% url 'logout' %}?next=http://127.0.0.1:8000/chat" class="inline-block" >Cerrar sesión</a></li>
+                          </ul>
                         </li>
                     </ul>
-
                 </div>
             </div>
         </nav>

@@ -2,6 +2,16 @@
 // connection gets bumped over to WebSocket consumers
 
 socket = new WebSocket("ws://" + window.location.host + "/chat/");
+var window_focus;
+var nmensajesnoleidos = 0;
+
+$(window).focus(function() {
+    window_focus = true;
+    nmensajesnoleidos = 0;
+    document.title = document.old_title;
+}).blur(function() {
+    window_focus = false;
+});
 
 socket.onmessage = function (message) {
 
@@ -13,6 +23,11 @@ socket.onmessage = function (message) {
 
     if (data.tipo_mensaje == "broadcast") {
         chat.append($(crear_mensaje_html(data.username, data.mensaje)).hide().fadeIn(100));
+
+        if(!window_focus){
+            nmensajesnoleidos++;
+            document.title = document.old_title + "(" + nmensajesnoleidos + ")";
+        }
     }else if(data.tipo_mensaje == "conectado_chat"){
         listac.append($("<li>" + data.username + "</li>").hide().fadeIn(100));
         nconectados.html(parseInt(nconectados.html()) + 1)
@@ -37,15 +52,16 @@ socket.onmessage = function (message) {
 
 $(document).ready(function(){
 
+    document.old_title = document.title;
+
     $('#text-mensaje').keyup(function(e){
         if(e.keyCode == 13) {
             chequear_enviar_mensaje();
         }
     });
+
     $('#boton-enviar').on('click', function (event) {
-
         chequear_enviar_mensaje();
-
 	});
 
     function chequear_enviar_mensaje(){
@@ -99,17 +115,3 @@ function crear_mensaje_html(username,mensaje){
 
     return nueva_entrada
 }
-/*
-function crear_mensaje_conectado_html(username){
-    return '<div><span class="glyphicon glyphicon-user" aria-hidden="true"></span><b> '
-        + username +
-        ' se ha conectado al chat. </b></div>'
-}
-
-function crear_mensaje_desconectado_html(username){
-    return '<div><span class="glyphicon glyphicon-user" aria-hidden="true"></span><b> '
-        + username +
-        ' se ha desconectado del chat. </b></div>'
-}
-
-*/
